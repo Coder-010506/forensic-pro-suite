@@ -15,6 +15,15 @@ This version has been overhauled to provide military-grade forensic reliability:
 
 ---
 
+## 📖 Navigation
+
+*   **[🚀 Full Setup Guide](./SETUP.md)**
+*   **[🌍 Deployment Guide](./SETUP.md#deployment-guide)**
+*   **[🤝 Contributing](./Contributing.md)**
+*   **[⚖️ License](./LICENSE.md)**
+
+---
+
 ## 🚀 Key Features
 
 * **Secure Investigator Portal:** NextAuth.js credential-based login with session management.
@@ -23,8 +32,23 @@ This version has been overhauled to provide military-grade forensic reliability:
 * **Geospatial Threat Attribution:** Interactive world map plotting 6 simulated threat nodes with severity-coded markers.
 * **Forensic Tool Dashboard:** Cards for EnCase, Wireshark, Autopsy, and the **Automated Flow** trigger.
 * **Live Threat Feed:** Real-time log stream of global forensic events.
-* **Xterm.js Terminal:** Embedded browser-based CLI for manual triage commands.
+* **Investigator CLI (Xterm.js):** A high-fidelity terminal simulation of industry-standard forensic tools (`Autopsy`, `Volatility`, `Wireshark`) for manual triage.
 * **PDF Report Generation:** Enhanced chain-of-custody reports via jsPDF including advanced metrics.
+
+---
+
+## 🖥️ Investigator CLI Commands
+
+The embedded terminal (`investigator_cli_v1`) allows you to simulate high-level forensic triage. Type `help` in the dashboard terminal to see these in action:
+
+| Command | Forensic Function | Simulation Output |
+|---|---|---|
+| `autopsy` | Sleuth Kit Engine | Partition table analysis and deleted file detection. |
+| `wireshark --cli` | Network Triage | Live packet capture simulation with DNS threat detection. |
+| `vol.py --info` | Memory Forensics | Volatility 3 framework output showing suspicious processes. |
+| `fls <image>` | File Listing | Inode and file system record extraction from a disk image. |
+| `mactime` | Timeline Analysis | Temporal evidence visualization (Modified/Accessed/Created). |
+| `clear` | UI Management | Flushes the terminal buffer. |
 
 ---
 

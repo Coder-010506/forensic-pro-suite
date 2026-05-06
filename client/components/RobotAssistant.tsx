@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TutorialOverlay from "./TutorialOverlay";
 
+import { Bot, Info } from "lucide-react";
+
 const lessons = [
   { title: "Welcome", text: "Investigator, I am your Forensic Assistant. This workstation has been significantly upgraded for high-fidelity triage.", targetId: undefined },
   { title: "Enhanced Identification", text: "Dual-Hash verification is active. We now verify integrity using BOTH SHA-256 and MD5 simultaneously for zero-collision confidence.", targetId: "tool-automated-flow" },
@@ -77,7 +79,7 @@ export default function RobotAssistant() {
               onClick={handleReset}
               className="w-20 h-20 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-full flex items-center justify-center text-4xl shadow-[0_0_25px_rgba(16,185,129,0.6)] cursor-pointer"
             >
-              🤖
+              <Bot className="w-10 h-10 text-white" />
             </motion.div>
           </motion.div>
         )}
