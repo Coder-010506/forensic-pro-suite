@@ -152,7 +152,7 @@ uvicorn main:app --reload --port 8000
 
 ```bash
 cd client
-npm install
+npm install --legacy-peer-deps
 npm run dev
 ```
 
