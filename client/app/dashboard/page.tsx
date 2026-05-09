@@ -499,7 +499,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-6">
-          <div className="sticky top-6 space-y-6">
+          <div id="forensic-terminal-container" className="sticky top-6 space-y-6">
             <ThreatIntelligenceFeed />
             <ForensicTerminal />
             <div className="mt-6">
