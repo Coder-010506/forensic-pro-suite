@@ -102,56 +102,31 @@ export default function ForensicTerminal() {
   };
 
   useEffect(() => {
-    if (!terminalRef.current) {
-      return;
-    }
+    if (!terminalRef.current) return;
 
     const term = new Terminal({
       cursorBlink: true,
-
       theme: {
         background: "#0f172a",
         foreground: "#10b981",
       },
       fontSize: 14,
       fontFamily: "Courier New",
-
-      theme: { background: '#0f172a', foreground: '#10b981' }, 
-      fontSize: 14,
-      fontFamily: 'Courier New',
       allowProposedApi: true,
-
     });
 
     const fitAddon = new FitAddon();
-
     term.loadAddon(fitAddon);
 
-    term.writeln(
-      "--- FORENSIC_PRO_TERMINAL v1.0.4 ---"
-    );
-
-    term.writeln(
-      'Type "help" to see available forensic commands.'
-    );
-
-    term.write("\r\n$ ");
-
-    let currentLine = "";
-
-    term.onData((e) => {
-      if (e === "\r") {
-        term.write("\r\n");
-
-    // Use requestAnimationFrame to ensure the DOM has rendered
+    // Use requestAnimationFrame to ensure the DOM has rendered and has height
     const initTerminal = () => {
       if (terminalRef.current && terminalRef.current.offsetHeight > 0) {
         term.open(terminalRef.current);
         fitAddon.fit();
         
-        term.writeln('--- FORENSIC_PRO_TERMINAL v1.0.4 ---');
+        term.writeln("--- FORENSIC_PRO_TERMINAL v1.0.4 ---");
         term.writeln('Type "help" to see available forensic commands.');
-        term.write('\r\n$ ');
+        term.write("\r\n$ ");
       } else {
         requestAnimationFrame(initTerminal);
       }
@@ -166,56 +141,48 @@ export default function ForensicTerminal() {
           fitAddon.fit();
         }
       } catch (e) {
-        console.warn('Terminal resize failed', e);
+        console.warn("Terminal resize failed", e);
       }
     });
 
-    if (terminalRef.current) {
-      resizeObserver.observe(terminalRef.current);
-    }
+    resizeObserver.observe(terminalRef.current);
 
-
+    let currentLine = "";
+    term.onData((e) => {
+      if (e === "\r") {
+        term.write("\r\n");
         handleCommand(currentLine, term);
-
         currentLine = "";
-
         term.write("$ ");
       } else if (e === "\u007f") {
         if (currentLine.length > 0) {
           currentLine = currentLine.slice(0, -1);
-
           term.write("\b \b");
         }
       } else {
         currentLine += e;
-
         term.write(e);
       }
     });
 
     return () => {
-
       resizeObserver.disconnect();
-
       term.dispose();
     };
   }, []);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 mt-8">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 mt-8 shadow-2xl">
       <div className="flex items-center gap-2 mb-3 px-2">
-        <div className="h-3 w-3 rounded-full bg-red-500"></div>
-
-        <div className="h-3 w-3 rounded-full bg-amber-500"></div>
-
-        <div className="h-3 w-3 rounded-full bg-emerald-500"></div>
-
-        <span className="text-[10px] text-slate-500 font-mono ml-4 uppercase">
+        <div className="h-3 w-3 rounded-full bg-red-500/80 shadow-sm shadow-red-500/20"></div>
+        <div className="h-3 w-3 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/20"></div>
+        <div className="h-3 w-3 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/20"></div>
+        <span className="text-[10px] text-slate-500 font-mono ml-4 uppercase tracking-widest">
           investigator_cli_v1
         </span>
       </div>
 
-      <div ref={terminalRef} className="h-64" />
+      <div ref={terminalRef} className="h-64 rounded-lg overflow-hidden" />
     </div>
   );
 }
