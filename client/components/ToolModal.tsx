@@ -10,6 +10,7 @@ interface ToolModalProps {
     cat: string;
     icon: React.ReactNode;
     id: string;
+    tasks?: string[];
   } | null;
   onClose: () => void;
 }
@@ -17,22 +18,35 @@ interface ToolModalProps {
 export default function ToolModal({ tool, onClose }: ToolModalProps) {
   const [status, setStatus] = useState<"idle" | "running" | "complete">("idle");
   const [progress, setProgress] = useState(0);
+  const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
+
+  const defaultTasks = ["Initializing Engine", "Validating Evidence", "Running Deep Scan", "Generating Report"];
+  const tasks = tool?.tasks || defaultTasks;
 
   useEffect(() => {
     if (status === "running") {
+      const totalTasks = tasks.length;
       const interval = setInterval(() => {
         setProgress((prev) => {
-          if (prev >= 100) {
+          const nextProgress = prev + Math.random() * 8;
+          
+          // Update current task based on progress
+          const calculatedTaskIndex = Math.floor((nextProgress / 100) * totalTasks);
+          if (calculatedTaskIndex < totalTasks) {
+            setCurrentTaskIndex(calculatedTaskIndex);
+          }
+
+          if (nextProgress >= 100) {
             clearInterval(interval);
             setStatus("complete");
             return 100;
           }
-          return prev + Math.random() * 15;
+          return nextProgress;
         });
-      }, 500);
+      }, 400);
       return () => clearInterval(interval);
     }
-  }, [status]);
+  }, [status, tasks.length]);
 
   if (!tool) return null;
 
@@ -69,12 +83,17 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
             {status === "idle" && (
               <div className="space-y-6">
                 <div className="bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl">
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-emerald-400 mb-2 flex items-center gap-2">
-                    <Shield className="w-4 h-4" /> Operational Readiness
+                  <h4 className="text-sm font-bold text-slate-900 dark:text-emerald-400 mb-4 flex items-center gap-2">
+                    <Shield className="w-4 h-4" /> Operational Pipeline
                   </h4>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                    Tool is ready for ingestion. Ensure evidence integrity before mounting the image or initiating the network capture. All actions are logged under NIST-compliant forensic standards.
-                  </p>
+                  <div className="space-y-3">
+                    {tasks.map((task, i) => (
+                      <div key={i} className="flex items-center gap-3 text-sm text-slate-600 dark:text-slate-400">
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700" />
+                        {task}
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <button 
                   onClick={() => setStatus("running")}
@@ -88,21 +107,35 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
 
             {status === "running" && (
               <div className="space-y-6">
-                <div className="flex justify-between items-end mb-2">
-                  <div className="flex items-center gap-2 text-emerald-500">
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span className="text-xs font-mono font-bold uppercase tracking-widest">Processing...</span>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-end">
+                    <div className="flex items-center gap-3">
+                      <Loader2 className="w-5 h-5 text-emerald-500 animate-spin" />
+                      <div>
+                        <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest font-mono">Current Task</p>
+                        <h4 className="text-lg font-bold text-slate-900 dark:text-white">{tasks[currentTaskIndex]}</h4>
+                      </div>
+                    </div>
+                    <span className="text-2xl font-mono font-bold text-emerald-500">{Math.floor(progress)}%</span>
                   </div>
-                  <span className="text-xl font-mono font-bold text-slate-900 dark:text-white">{Math.floor(progress)}%</span>
+                  
+                  <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden border border-slate-200 dark:border-slate-700 p-0.5">
+                    <motion.div 
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      className="h-full bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                    />
+                  </div>
                 </div>
-                <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    className="h-full bg-emerald-500"
-                  />
+
+                <div className="grid grid-cols-1 gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                   {tasks.map((task, i) => (
+                     <div key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${i === currentTaskIndex ? "bg-emerald-500/5 border-emerald-500/30 text-emerald-500" : i < currentTaskIndex ? "opacity-50 border-transparent text-slate-500" : "border-transparent text-slate-400"}`}>
+                       <span className="text-xs font-bold uppercase tracking-tight">{task}</span>
+                       {i < currentTaskIndex ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : i === currentTaskIndex ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                     </div>
+                   ))}
                 </div>
-                <AnalysisLogs />
               </div>
             )}
 
@@ -112,21 +145,23 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
               >
-                <div className="bg-emerald-500/10 border border-emerald-500/20 p-6 rounded-2xl flex items-center gap-4">
-                  <CheckCircle className="w-10 h-10 text-emerald-500" />
+                <div className="bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-3xl text-center space-y-4">
+                  <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/30">
+                    <CheckCircle className="w-10 h-10 text-white" />
+                  </div>
                   <div>
-                    <h4 className="font-bold text-slate-900 dark:text-white">Analysis Finalized</h4>
-                    <p className="text-sm text-slate-600 dark:text-emerald-500/80">Evidence hash verified. Integrity check passed.</p>
+                    <h4 className="text-2xl font-bold text-slate-900 dark:text-white">Analysis Complete</h4>
+                    <p className="text-slate-600 dark:text-emerald-500/80 font-medium">All forensic artifacts have been successfully verified and indexed.</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <button className="flex items-center justify-center gap-2 bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition shadow-lg">
+                  <button className="flex items-center justify-center gap-3 bg-slate-900 text-white py-4 rounded-2xl font-bold hover:bg-slate-800 transition shadow-xl active:scale-[0.98]">
                     <Terminal className="w-5 h-5" />
-                    View CLI Logs
+                    CLI Audit
                   </button>
-                  <button className="flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white py-4 rounded-2xl font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition shadow-sm">
+                  <button className="flex items-center justify-center gap-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-4 rounded-2xl font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition shadow-sm active:scale-[0.98]">
                     <Download className="w-5 h-5" />
-                    Export Case
+                    Download Case
                   </button>
                 </div>
               </motion.div>
@@ -135,7 +170,7 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
 
           <div className="p-4 bg-slate-50 dark:bg-slate-950/50 border-t border-slate-100 dark:border-slate-800 text-center">
             <p className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.3em]">
-              Forensic Integrity Protocol V4.2
+              Forensic Integrity Protocol V4.2 • Secured Session
             </p>
           </div>
         </motion.div>

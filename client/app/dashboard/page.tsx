@@ -124,12 +124,49 @@ export default function DashboardPage() {
   };
 
   const forensicTools = [
-    { name: "EnCase", cat: "Disk Analysis", icon: <Search className="w-6 h-6 text-blue-400" />, id: "tool-encase" },
-    { name: "Wireshark", cat: "Network Packets", icon: <Activity className="w-6 h-6 text-emerald-400" />, id: "tool-wireshark" },
-    { name: "Autopsy", cat: "Digital Investigation", icon: <Skull className="w-6 h-6 text-red-400" />, id: "tool-autopsy" },
-    { name: "FTK Imager", cat: "Evidence Acquisition", icon: <Save className="w-6 h-6 text-purple-400" />, id: "tool-ftk-imager" },
-    { name: "Data Recovery", cat: "Recuva / Stellar", icon: <Folder className="w-6 h-6 text-amber-400" />, id: "tool-data-recovery" },
-    { name: "Automated Flow", cat: "End-to-End AI", icon: <Zap className="w-6 h-6 text-emerald-400" />, special: true, id: "tool-automated-flow" },
+    { 
+      name: "EnCase", 
+      cat: "Disk Analysis", 
+      icon: <Search className="w-6 h-6 text-blue-400" />, 
+      id: "tool-encase",
+      tasks: ["Mounting Disk Image", "Verifying MD5 Hash", "Parsing Partition Table", "File System Reconstruction"]
+    },
+    { 
+      name: "Wireshark", 
+      cat: "Network Packets", 
+      icon: <Activity className="w-6 h-6 text-emerald-400" />, 
+      id: "tool-wireshark",
+      tasks: ["Capturing Packets on eth0", "Filtering TCP/UDP Streams", "Detecting Suspicious Headers", "Exporting PCAP Artifacts"]
+    },
+    { 
+      name: "Autopsy", 
+      cat: "Digital Investigation", 
+      icon: <Skull className="w-6 h-6 text-red-400" />, 
+      id: "tool-autopsy",
+      tasks: ["Ingesting Forensic Image", "Keyword Search (PII)", "Timeline Generation", "Registry Analysis"]
+    },
+    { 
+      name: "FTK Imager", 
+      cat: "Evidence Acquisition", 
+      icon: <Save className="w-6 h-6 text-purple-400" />, 
+      id: "tool-ftk-imager",
+      tasks: ["Creating Evidence File", "Verifying Image Integrity", "Physical Drive Acquisition", "Imaging Verification"]
+    },
+    { 
+      name: "Data Recovery", 
+      cat: "Recuva / Stellar", 
+      icon: <Folder className="w-6 h-6 text-amber-400" />, 
+      id: "tool-data-recovery",
+      tasks: ["Deep Scan for Deleted Files", "Sector-by-Sector Recovery", "Corrupt Header Repair", "Restoring Fragments"]
+    },
+    { 
+      name: "Automated Flow", 
+      cat: "End-to-End AI", 
+      icon: <Zap className="w-6 h-6 text-emerald-400" />, 
+      special: true, 
+      id: "tool-automated-flow",
+      tasks: ["AI Artifact Triaging", "Pattern Recognition", "Cross-Case Correlation", "Automated Report Generation"]
+    },
   ];
 
   const handleToolClick = (tool: any) => {
