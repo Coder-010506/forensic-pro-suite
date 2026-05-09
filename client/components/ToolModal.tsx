@@ -28,9 +28,10 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
       const totalTasks = tasks.length;
       const interval = setInterval(() => {
         setProgress((prev) => {
-          const nextProgress = prev + Math.random() * 8;
+          // Slower, more granular progress
+          const nextProgress = prev + (Math.random() * 5 + 2);
           
-          // Update current task based on progress
+          // Ensure we don't skip task indices
           const calculatedTaskIndex = Math.floor((nextProgress / 100) * totalTasks);
           if (calculatedTaskIndex < totalTasks) {
             setCurrentTaskIndex(calculatedTaskIndex);
@@ -38,12 +39,13 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
 
           if (nextProgress >= 100) {
             clearInterval(interval);
-            setStatus("complete");
+            // Small delay before showing the final success screen so user can see all tasks checked
+            setTimeout(() => setStatus("complete"), 1000);
             return 100;
           }
           return nextProgress;
         });
-      }, 400);
+      }, 500);
       return () => clearInterval(interval);
     }
   }, [status, tasks.length]);
@@ -130,9 +132,9 @@ export default function ToolModal({ tool, onClose }: ToolModalProps) {
 
                 <div className="grid grid-cols-1 gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
                    {tasks.map((task, i) => (
-                     <div key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${i === currentTaskIndex ? "bg-emerald-500/5 border-emerald-500/30 text-emerald-500" : i < currentTaskIndex ? "opacity-50 border-transparent text-slate-500" : "border-transparent text-slate-400"}`}>
+                     <div key={i} className={`flex items-center justify-between p-3 rounded-xl border transition-all ${i === currentTaskIndex && progress < 100 ? "bg-emerald-500/5 border-emerald-500/30 text-emerald-500" : (i < currentTaskIndex || (i === tasks.length - 1 && progress === 100)) ? "opacity-50 border-transparent text-slate-500" : "border-transparent text-slate-400"}`}>
                        <span className="text-xs font-bold uppercase tracking-tight">{task}</span>
-                       {i < currentTaskIndex ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : i === currentTaskIndex ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                       {(i < currentTaskIndex || (i === tasks.length - 1 && progress === 100)) ? <CheckCircle className="w-4 h-4 text-emerald-500" /> : i === currentTaskIndex ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                      </div>
                    ))}
                 </div>
