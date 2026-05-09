@@ -4,9 +4,12 @@ import { useEffect, useRef } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
+import { useTheme } from "next-themes";
 
 export default function ForensicTerminal() {
   const terminalRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
 
   const handleCommand = (cmd: string, term: Terminal) => {
     const command = cmd.trim().toLowerCase();
@@ -107,8 +110,9 @@ export default function ForensicTerminal() {
     const term = new Terminal({
       cursorBlink: true,
       theme: {
-        background: "#0f172a",
-        foreground: "#10b981",
+        background: isDark ? "#0f172a" : "#ffffff",
+        foreground: isDark ? "#10b981" : "#059669",
+        cursor: isDark ? "#10b981" : "#059669",
       },
       fontSize: 14,
       fontFamily: "Courier New",
@@ -169,10 +173,10 @@ export default function ForensicTerminal() {
       resizeObserver.disconnect();
       term.dispose();
     };
-  }, []);
+  }, [theme]);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 mt-8 shadow-2xl">
+    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm">
       <div className="flex items-center gap-2 mb-3 px-2">
         <div className="h-3 w-3 rounded-full bg-red-500/80 shadow-sm shadow-red-500/20"></div>
         <div className="h-3 w-3 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/20"></div>

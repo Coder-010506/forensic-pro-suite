@@ -348,8 +348,8 @@ export default function DashboardPage() {
                 disabled={exportButtonDisabled}
                 className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 transition-all duration-200 ${
                   exportButtonDisabled
-                    ? "border-slate-700 bg-slate-800 text-slate-500 cursor-not-allowed shadow-none"
-                    : "border-emerald-500/30 bg-slate-900/90 text-emerald-300 shadow-sm shadow-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-100 active:scale-[0.98]"
+                    ? "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed shadow-none"
+                    : "border-emerald-500/30 bg-slate-100/90 dark:bg-slate-900/90 text-emerald-600 dark:text-emerald-300 shadow-sm shadow-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-100 active:scale-[0.98]"
                 }`}
               >
                 <Download className="w-3.5 h-3.5" />
@@ -376,20 +376,20 @@ export default function DashboardPage() {
             </AnimatePresence>
 
             {!hasLiveRecords && (
-              <div className="mb-6 rounded-2xl border border-slate-800 bg-slate-900/80 p-4">
+              <div className="mb-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-4 shadow-sm">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.3em] text-slate-500 font-mono mb-1">
+                    <p className="text-[11px] uppercase tracking-[0.3em] text-slate-400 dark:text-slate-500 font-mono mb-1">
                       Demo forensic export
                     </p>
-                    <p className="text-sm leading-6 text-slate-300">
+                    <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
                       No live case records detected. You can still export demo forensic records for preview and audit testing.
                     </p>
                   </div>
                   <button
                     onClick={handleExportCSV}
                     disabled={isExporting}
-                    className="mt-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-300 hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-100 transition-all duration-200 shadow-sm shadow-emerald-500/10 active:scale-[0.98]"
+                    className="mt-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600 dark:text-emerald-300 hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-100 transition-all duration-200 shadow-sm shadow-emerald-500/10 active:scale-[0.98]"
                   >
                     Export Demo CSV
                   </button>
