@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Shield, ArrowLeft } from "lucide-react";
 import Footer from "@/components/Footer";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function PrivacyPage() {
   useEffect(() => {
@@ -28,13 +29,16 @@ export default function PrivacyPage() {
                 <p className="text-slate-500 text-xs font-mono uppercase tracking-widest mt-1">Effective Date: May 10, 2026</p>
               </div>
             </div>
-            <Link 
-              href="/dashboard" 
-              className="flex items-center gap-2 text-slate-400 hover:text-emerald-500 dark:hover:text-white transition-colors text-sm font-mono uppercase tracking-widest bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Return_to_Station
-            </Link>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <Link 
+                href="/dashboard" 
+                className="flex items-center gap-2 text-slate-400 hover:text-emerald-500 dark:hover:text-white transition-colors text-sm font-mono uppercase tracking-widest bg-slate-50 dark:bg-slate-900 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Return_to_Station
+              </Link>
+            </div>
           </div>
 
           <section className="space-y-8 leading-relaxed text-slate-400">
