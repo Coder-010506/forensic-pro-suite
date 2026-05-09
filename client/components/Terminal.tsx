@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
@@ -9,7 +9,13 @@ import { useTheme } from "next-themes";
 export default function ForensicTerminal() {
   const terminalRef = useRef<HTMLDivElement>(null);
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted ? resolvedTheme === "dark" : true; // Default to dark for forensic aesthetic during SSR
 
   const handleCommand = (cmd: string, term: Terminal) => {
     const command = cmd.trim().toLowerCase();
