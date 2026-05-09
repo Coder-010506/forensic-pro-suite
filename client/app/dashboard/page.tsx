@@ -9,6 +9,7 @@ import RobotAssistant from "@/components/RobotAssistant";
 
 const ForensicTerminal = dynamic(() => import("@/components/Terminal"), { ssr: false });
 const ForensicMap = dynamic(() => import("@/components/ForensicMap"), { ssr: false });
+const ThreatIntelligenceFeed = dynamic(() => import("@/components/ThreatIntelligenceFeed"), { ssr: false });
 
 import AnalysisLogs from "@/components/AnalysisLogs";
 import { supabase } from "@/lib/supabase";
@@ -447,7 +448,8 @@ export default function DashboardPage() {
         </div>
 
         <div className="lg:col-span-4 space-y-6">
-          <div className="sticky top-6">
+          <div className="sticky top-6 space-y-6">
+            <ThreatIntelligenceFeed />
             <ForensicTerminal />
             <div className="mt-6">
               <RobotAssistant />
