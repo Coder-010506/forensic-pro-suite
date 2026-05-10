@@ -82,6 +82,8 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     const term = new Terminal({
       cursorBlink: true,
       cursorStyle: "bar",
+      rows: 24,
+      cols: 80,
       theme: {
         background: isDark ? "#0f172a" : "#ffffff",
         foreground: isDark ? "#e2e8f0" : "#0f172a", // Slate-200 for dark, Slate-950 for light
@@ -93,38 +95,25 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       allowProposedApi: true,
     });
 
-    const fitAddon = new FitAddon();
-    term.loadAddon(fitAddon);
     termInstance.current = term;
 
     // Direct open
     term.open(terminalRef.current);
     
-    // Give it a moment to render before fitting
+    // Give it a moment to render
     const initTimeout = setTimeout(() => {
-      if (termInstance.current && terminalRef.current && !initialized.current === false) { // Basic check
+      if (termInstance.current && terminalRef.current && terminalRef.current.offsetParent) {
         try {
-          fitAddon.fit();
           termInstance.current.focus();
           termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
           termInstance.current.writeln('Type "help" to see available forensic commands.');
           termInstance.current.write("\r\n$ ");
-        } catch (e) {
-          // Terminal might have been disposed
-        }
+        } catch (e) {}
       }
     }, 200);
 
     const resizeObserver = new ResizeObserver(() => {
-      if (!termInstance.current || !terminalRef.current) return;
-      try {
-        // Only fit if the element is actually visible and in the document
-        if (terminalRef.current.offsetParent !== null && document.body.contains(terminalRef.current)) {
-          fitAddon.fit();
-        }
-      } catch (e) {
-        // Ignore resize errors
-      }
+      // Disabled FitAddon for stability
     });
     resizeObserver.observe(terminalRef.current);
 
