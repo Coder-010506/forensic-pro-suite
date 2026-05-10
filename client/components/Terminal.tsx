@@ -99,12 +99,14 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     
     // Give it a moment to render before fitting
     setTimeout(() => {
-      fitAddon.fit();
-      term.focus();
-      term.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
-      term.writeln('Type "help" to see available forensic commands.');
-      term.write("\r\n$ ");
-    }, 100);
+      if (termInstance.current) {
+        fitAddon.fit();
+        termInstance.current.focus();
+        termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
+        termInstance.current.writeln('Type "help" to see available forensic commands.');
+        termInstance.current.write("\r\n$ ");
+      }
+    }, 200); // Increased delay for stability
 
     const resizeObserver = new ResizeObserver(() => {
       try {
@@ -158,23 +160,27 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
   return (
     <div 
       className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm cursor-text"
-      onClick={() => termInstance.current?.focus()}
+      onClick={() => {
+        if (termInstance.current) {
+          termInstance.current.focus();
+        }
+      }}
     >
       <div className="flex items-center gap-2 mb-3 px-2 border-b border-slate-100 dark:border-slate-800/50 pb-2">
         <div className="h-3 w-3 rounded-full bg-red-500/80 shadow-sm shadow-red-500/20"></div>
         <div className="h-3 w-3 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/20"></div>
         <div className="h-3 w-3 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/20"></div>
-        <span className="text-[10px] text-slate-400 dark:text-slate-400 font-mono ml-4 uppercase tracking-widest">
-          investigator_cli_v1
+        <span className="text-[10px] text-emerald-500 font-mono ml-4 uppercase tracking-[0.2em] font-bold">
+          TERMINAL_ACTIVE
         </span>
       </div>
 
       <div 
         ref={terminalRef} 
-        tabIndex={0}
         className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f172a]" : "bg-white"}`} 
       />
     </div>
+  );
   );
 }
 
