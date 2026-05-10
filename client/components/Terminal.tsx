@@ -102,7 +102,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     
     // Give it a moment to render before fitting
     const initTimeout = setTimeout(() => {
-      if (termInstance.current && terminalRef.current) {
+      if (termInstance.current && terminalRef.current && !initialized.current === false) { // Basic check
         try {
           fitAddon.fit();
           termInstance.current.focus();
@@ -110,7 +110,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
           termInstance.current.writeln('Type "help" to see available forensic commands.');
           termInstance.current.write("\r\n$ ");
         } catch (e) {
-          console.warn("Terminal init fit failed", e);
+          // Terminal might have been disposed
         }
       }
     }, 200);
@@ -118,7 +118,10 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     const resizeObserver = new ResizeObserver(() => {
       if (!termInstance.current || !terminalRef.current) return;
       try {
-        fitAddon.fit();
+        // Only fit if the element is actually in the document
+        if (document.body.contains(terminalRef.current)) {
+          fitAddon.fit();
+        }
       } catch (e) {
         // Ignore resize errors
       }
@@ -151,11 +154,18 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       clearTimeout(initTimeout);
       keyDisposable.dispose();
       resizeObserver.disconnect();
-      if (termInstance.current) {
-        termInstance.current.dispose();
-        termInstance.current = null;
-      }
+      
+      const toDispose = termInstance.current;
+      termInstance.current = null; // Set to null FIRST
       initialized.current = false;
+      
+      if (toDispose) {
+        try {
+          toDispose.dispose();
+        } catch (e) {
+          // Ignore disposal errors
+        }
+      }
     };
   }, []);
 
