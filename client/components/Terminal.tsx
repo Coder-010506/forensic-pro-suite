@@ -8,14 +8,16 @@ import { useTheme } from "next-themes";
 
 export default function ForensicTerminal() {
   const terminalRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const isDark = resolvedTheme === "dark" || !mounted; // Default to dark if not mounted
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const termInstance = useRef<Terminal | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  if (!mounted) return <div className="h-64 mt-8 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />;
 
   const handleCommand = (cmd: string, term: Terminal) => {
     const command = cmd.trim().toLowerCase();
