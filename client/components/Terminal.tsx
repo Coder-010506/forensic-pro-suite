@@ -101,17 +101,22 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     term.open(terminalRef.current);
     
     // Give it a moment to render before fitting
-    setTimeout(() => {
-      if (termInstance.current) {
-        fitAddon.fit();
-        termInstance.current.focus();
-        termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m"); // Back to Emerald for header only
-        termInstance.current.writeln('Type "help" to see available forensic commands.');
-        termInstance.current.write("\r\n$ ");
+    const initTimeout = setTimeout(() => {
+      if (termInstance.current && terminalRef.current) {
+        try {
+          fitAddon.fit();
+          termInstance.current.focus();
+          termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
+          termInstance.current.writeln('Type "help" to see available forensic commands.');
+          termInstance.current.write("\r\n$ ");
+        } catch (e) {
+          console.warn("Terminal init fit failed", e);
+        }
       }
-    }, 200); // Increased delay for stability
+    }, 200);
 
     const resizeObserver = new ResizeObserver(() => {
+      if (!termInstance.current || !terminalRef.current) return;
       try {
         fitAddon.fit();
       } catch (e) {
@@ -122,6 +127,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
     let currentLine = "";
     const keyDisposable = term.onKey(({ key, domEvent }) => {
+      if (!termInstance.current) return;
       const char = key;
       const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
 
@@ -142,10 +148,14 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     });
 
     return () => {
+      clearTimeout(initTimeout);
       keyDisposable.dispose();
       resizeObserver.disconnect();
-      term.dispose();
-      termInstance.current = null;
+      if (termInstance.current) {
+        termInstance.current.dispose();
+        termInstance.current = null;
+      }
+      initialized.current = false;
     };
   }, []);
 
