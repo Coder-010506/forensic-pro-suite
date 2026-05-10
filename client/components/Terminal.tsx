@@ -82,9 +82,11 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     const term = new Terminal({
       cursorBlink: true,
       cursorStyle: "bar",
+      rows: 20,
+      cols: 80,
       theme: {
         background: isDark ? "#0f172a" : "#ffffff",
-        foreground: isDark ? "#e2e8f0" : "#0f172a", // Slate-200 for dark, Slate-950 for light
+        foreground: isDark ? "#e2e8f0" : "#0f172a",
         cursor: isDark ? "#e2e8f0" : "#0f172a",
         selectionBackground: isDark ? "rgba(226, 232, 240, 0.2)" : "rgba(15, 23, 42, 0.1)",
       },
@@ -97,31 +99,42 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     term.loadAddon(fitAddon);
     termInstance.current = term;
 
-    // Direct open
-    term.open(terminalRef.current);
-    
-    // Give it a moment to render before fitting
-    setTimeout(() => {
-      if (termInstance.current) {
-        fitAddon.fit();
-        termInstance.current.focus();
-        termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m"); // Back to Emerald for header only
-        termInstance.current.writeln('Type "help" to see available forensic commands.');
-        termInstance.current.write("\r\n$ ");
+    let initTimeout: NodeJS.Timeout;
+    const checkInterval = setInterval(() => {
+      if (terminalRef.current && terminalRef.current.offsetWidth > 0 && !initialized.current === false) {
+        clearInterval(checkInterval);
+        
+        try {
+          term.open(terminalRef.current);
+          
+          initTimeout = setTimeout(() => {
+            if (termInstance.current && terminalRef.current && terminalRef.current.offsetParent) {
+              try {
+                fitAddon.fit();
+                termInstance.current.focus();
+                termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
+                termInstance.current.writeln('Type "help" to see available forensic commands.');
+                termInstance.current.write("\r\n$ ");
+              } catch (e) {}
+            }
+          }, 100);
+        } catch (e) {
+          // Fallback if open fails
+        }
       }
-    }, 200); // Increased delay for stability
+    }, 50);
 
     const resizeObserver = new ResizeObserver(() => {
+      if (!termInstance.current || !terminalRef.current || !terminalRef.current.offsetParent) return;
       try {
         fitAddon.fit();
-      } catch (e) {
-        // Ignore resize errors
-      }
+      } catch (e) {}
     });
     resizeObserver.observe(terminalRef.current);
 
     let currentLine = "";
     const keyDisposable = term.onKey(({ key, domEvent }) => {
+      if (!termInstance.current || !terminalRef.current || !terminalRef.current.offsetParent) return;
       const char = key;
       const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
 
@@ -142,10 +155,20 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     });
 
     return () => {
+      clearInterval(checkInterval);
+      if (initTimeout) clearTimeout(initTimeout);
       keyDisposable.dispose();
       resizeObserver.disconnect();
-      term.dispose();
+      
+      const toDispose = termInstance.current;
       termInstance.current = null;
+      initialized.current = false;
+      
+      if (toDispose) {
+        try {
+          toDispose.dispose();
+        } catch (e) {}
+      }
     };
   }, []);
 
