@@ -118,8 +118,8 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     const resizeObserver = new ResizeObserver(() => {
       if (!termInstance.current || !terminalRef.current) return;
       try {
-        // Only fit if the element is actually in the document
-        if (document.body.contains(terminalRef.current)) {
+        // Only fit if the element is actually visible and in the document
+        if (terminalRef.current.offsetParent !== null && document.body.contains(terminalRef.current)) {
           fitAddon.fit();
         }
       } catch (e) {
@@ -130,7 +130,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
     let currentLine = "";
     const keyDisposable = term.onKey(({ key, domEvent }) => {
-      if (!termInstance.current) return;
+      if (!termInstance.current || !terminalRef.current || !terminalRef.current.offsetParent) return;
       const char = key;
       const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
 
