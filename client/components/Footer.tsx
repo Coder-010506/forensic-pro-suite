@@ -28,7 +28,7 @@ export default function Footer() {
           </div>
 
           {/* Links Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12 sm:gap-24 w-full lg:w-auto">
+          <div className="grid grid-cols-2 gap-8 sm:gap-24 w-full lg:w-auto">
             <div className="space-y-4">
               <h4 className="text-[10px] font-bold text-slate-900 dark:text-white uppercase tracking-[0.2em]">Platform</h4>
               <nav className="flex flex-col items-center lg:items-start gap-3">
