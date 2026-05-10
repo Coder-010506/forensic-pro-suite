@@ -73,8 +73,11 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     }
   };
 
+  const initialized = useRef(false);
+
   useEffect(() => {
-    if (!terminalRef.current) return;
+    if (!terminalRef.current || initialized.current) return;
+    initialized.current = true;
 
     const term = new Terminal({
       cursorBlink: true,
@@ -102,7 +105,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       if (termInstance.current) {
         fitAddon.fit();
         termInstance.current.focus();
-        termInstance.current.writeln("\x1b[1;37m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m"); // White text
+        termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m"); // Back to Emerald for header only
         termInstance.current.writeln('Type "help" to see available forensic commands.');
         termInstance.current.write("\r\n$ ");
       }
@@ -170,7 +173,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         <div className="h-3 w-3 rounded-full bg-red-500/80 shadow-sm shadow-red-500/20"></div>
         <div className="h-3 w-3 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/20"></div>
         <div className="h-3 w-3 rounded-full bg-emerald-500/80 shadow-sm shadow-emerald-500/20"></div>
-        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-mono ml-4 uppercase tracking-[0.2em] font-bold">
+        <span className="text-[10px] text-emerald-500 font-mono ml-4 uppercase tracking-[0.2em] font-bold">
           TERMINAL_ACTIVE
         </span>
       </div>
