@@ -17,7 +17,6 @@ export default function ForensicTerminal() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return <div className="h-64 mt-8 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />;
 
   const handleCommand = (cmd: string, term: Terminal) => {
     const command = cmd.trim().toLowerCase();
@@ -154,7 +153,6 @@ export default function ForensicTerminal() {
     };
   }, []);
 
-  // Update theme without re-initializing to preserve history
   useEffect(() => {
     if (termInstance.current) {
       termInstance.current.options.theme = {
@@ -165,6 +163,10 @@ export default function ForensicTerminal() {
       };
     }
   }, [isDark]);
+
+  if (!mounted) {
+    return <div className="h-64 mt-8 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />;
+  }
 
   return (
     <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm">
