@@ -151,7 +151,7 @@ export default function ForensicTerminal() {
       term.dispose();
       termInstance.current = null;
     };
-  }, []);
+  }, [mounted]);
 
   useEffect(() => {
     if (termInstance.current) {
