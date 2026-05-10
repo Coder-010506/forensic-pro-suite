@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Shield, FileText, Scale, BookOpen, Github, Mail, Linkedin, Instagram } from "lucide-react";
+import { Shield, Github, Mail, Linkedin, Instagram, Scale, FileText, BookOpen, Terminal } from "lucide-react";
 
 export default function Footer() {
   return (
