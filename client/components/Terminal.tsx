@@ -181,7 +181,6 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       />
     </div>
   );
-  );
 }
 
 export default function ForensicTerminal() {
