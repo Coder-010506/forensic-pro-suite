@@ -15,11 +15,12 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
     switch (command) {
       case "help":
-        term.writeln(
-          "Commands: autopsy, wireshark --cli, fls <image>, mactime, vol.py --info, hash <file>, clear"
-        );
+        term.writeln("Essential Aliases: scan, packets, files, timeline, memory");
+        term.writeln("Advanced Syntax: autopsy, wireshark --cli, fls, mactime, vol.py --info");
+        term.writeln("System: clear");
         break;
 
+      case "scan":
       case "autopsy":
         term.writeln("[*] Initializing Sleuth Kit engine...");
         term.writeln("[*] Mounting /dev/sda1 as read-only...");
@@ -29,6 +30,9 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         term.writeln("[+] Scan complete. Open Autopsy GUI for full report.");
         break;
 
+        break;
+
+      case "packets":
       case "wireshark --cli":
         term.writeln("[*] Capturing on eth0 (promiscuous mode)...");
         term.writeln("  Frame 1: 192.168.1.5 -> 8.8.8.8 DNS Query: forensics.gov");
@@ -37,6 +41,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         term.writeln("[!] Suspicious outbound connection on port 4444 detected.");
         break;
 
+      case "files":
       case "fls":
       case "fls <image>":
         term.writeln("r/r 5:    $MFT");
@@ -47,12 +52,14 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         term.writeln("r/r 130:  payload.exe (deleted)");
         break;
 
+      case "timeline":
       case "mactime":
         term.writeln("Mon Jan 13 2025 09:14:22 4096 m... d/d 11 /evidence");
         term.writeln("Mon Jan 13 2025 09:15:01 2048 .a.. r/r 128 /evidence/suspect_chat_logs.txt");
         term.writeln("Mon Jan 13 2025 09:15:44 512 mac. r/r 129 /evidence/payload.exe");
         break;
 
+      case "memory":
       case "vol.py --info":
         term.writeln("[*] Volatility 3 Framework");
         term.writeln("[+] Profile: Win10x64_19041");
@@ -69,7 +76,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         break;
 
       default:
-        term.writeln(`bash: ${command}: command not found. Type "help" for available commands.`);
+        term.writeln(`bash: ${command}: command not found. Type "help" for a list of simplified aliases.`);
     }
   };
 
@@ -240,6 +247,32 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         ref={terminalRef} 
         className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f172a]" : "bg-white"}`} 
       />
+
+      <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/50">
+        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest mb-3 px-1">Quick Actions</p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Run Scan", cmd: "scan" },
+            { label: "Analyze Packets", cmd: "packets" },
+            { label: "List Files", cmd: "files" },
+            { label: "View Timeline", cmd: "timeline" },
+            { label: "Check Memory", cmd: "memory" },
+            { label: "Clear", cmd: "clear" },
+          ].map((action) => (
+            <button
+              key={action.cmd}
+              onClick={() => {
+                if (termInstance.current) {
+                  termInstance.current.write(action.cmd + "\r");
+                }
+              }}
+              className="px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-bold text-slate-500 hover:text-emerald-500 hover:border-emerald-500/30 transition-all active:scale-95"
+            >
+              {action.label}
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
