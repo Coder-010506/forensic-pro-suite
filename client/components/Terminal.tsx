@@ -116,26 +116,28 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
     resizeObserver.observe(terminalRef.current);
 
     let currentLine = "";
-    const dataDisposable = term.onData((e) => {
-      // Basic terminal echoing logic
-      if (e === "\r") { // Enter
+    const keyDisposable = term.onKey(({ key, domEvent }) => {
+      const char = key;
+      const printable = !domEvent.altKey && !domEvent.ctrlKey && !domEvent.metaKey;
+
+      if (domEvent.keyCode === 13) { // Enter
         term.write("\r\n");
         handleCommand(currentLine, term);
         currentLine = "";
         term.write("$ ");
-      } else if (e === "\u007f") { // Backspace
+      } else if (domEvent.keyCode === 8) { // Backspace
         if (currentLine.length > 0) {
           currentLine = currentLine.slice(0, -1);
           term.write("\b \b");
         }
-      } else if (e.length === 1 && e.charCodeAt(0) >= 32) { // Printable characters
-        currentLine += e;
-        term.write(e);
+      } else if (printable && char.length === 1) {
+        currentLine += char;
+        term.write(char);
       }
     });
 
     return () => {
-      dataDisposable.dispose();
+      keyDisposable.dispose();
       resizeObserver.disconnect();
       term.dispose();
       termInstance.current = null;
