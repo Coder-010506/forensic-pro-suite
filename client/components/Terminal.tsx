@@ -97,6 +97,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       if (terminalRef.current && terminalRef.current.offsetHeight > 0) {
         term.open(terminalRef.current);
         fitAddon.fit();
+        term.focus(); // Ensure focus on open
         
         term.writeln("--- FORENSIC_PRO_TERMINAL v1.0.4 ---");
         term.writeln('Type "help" to see available forensic commands.');
@@ -157,7 +158,10 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
   }, [isDark]);
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm">
+    <div 
+      className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm cursor-text"
+      onClick={() => termInstance.current?.focus()}
+    >
       <div className="flex items-center gap-2 mb-3 px-2 border-b border-slate-100 dark:border-slate-800/50 pb-2">
         <div className="h-3 w-3 rounded-full bg-red-500/80 shadow-sm shadow-red-500/20"></div>
         <div className="h-3 w-3 rounded-full bg-amber-500/80 shadow-sm shadow-amber-500/20"></div>
@@ -169,9 +173,11 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
       <div 
         ref={terminalRef} 
+        tabIndex={0}
         className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f172a]" : "bg-white"}`} 
       />
     </div>
+  );
   );
 }
 
