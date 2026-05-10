@@ -38,6 +38,9 @@ export default function Footer() {
                 <Link href="/terms" className="text-slate-500 hover:text-emerald-500 transition-colors text-[11px] font-mono uppercase tracking-widest flex items-center gap-2">
                   <FileText className="w-3.5 h-3.5" /> Terms
                 </Link>
+                <Link href="/commands" className="text-slate-500 hover:text-emerald-500 transition-colors text-[11px] font-mono uppercase tracking-widest flex items-center gap-2">
+                  <Terminal className="w-3.5 h-3.5" /> Commands
+                </Link>
                 <Link href="/docs" className="text-slate-500 hover:text-emerald-500 transition-colors text-[11px] font-mono uppercase tracking-widest flex items-center gap-2">
                   <BookOpen className="w-3.5 h-3.5" /> Docs
                 </Link>

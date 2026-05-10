@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Terminal, Copy, Check, Info, Command } from "lucide-react";
+import { Terminal, Copy, Check, Info, Command, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 interface CommandItem {
   cmd: string;
@@ -70,11 +71,21 @@ export default function CommandGuide() {
         ))}
       </div>
 
-      <div className="mt-6 p-3 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-start gap-3">
-        <Info className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-        <p className="text-[9px] text-amber-600 dark:text-amber-400/80 leading-relaxed uppercase tracking-wider font-bold">
-          Note: These commands simulate industry-standard forensic tools within the workstation environment.
-        </p>
+      <div className="mt-6 flex flex-col gap-3">
+        <div className="p-3 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-start gap-3">
+          <Info className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-[9px] text-amber-600 dark:text-amber-400/80 leading-relaxed uppercase tracking-wider font-bold">
+            Note: These commands simulate industry-standard forensic tools.
+          </p>
+        </div>
+
+        <Link 
+          href="/commands" 
+          className="flex items-center justify-center gap-2 py-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 transition-all text-[10px] font-bold uppercase tracking-widest group"
+        >
+          Explore All Commands
+          <ChevronRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </div>
     </div>
   );
