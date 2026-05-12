@@ -242,7 +242,7 @@ export default function DashboardPage() {
     input.click();
   };
 
-  const chartData = buildChartData(caseHistory);
+  const chartData = buildChartData(caseHistory.length > 0 ? caseHistory : demoCaseRecords);
 
   const stats = {
   total: caseHistory.length,
@@ -456,7 +456,7 @@ export default function DashboardPage() {
 
             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
               <AnimatePresence>
-                {caseHistory.map((item) => (
+                {(caseHistory.length > 0 ? caseHistory : demoCaseRecords).map((item) => (
                   <motion.div
                     key={item.id}
                     className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-white dark:bg-slate-950/50 border border-slate-200 dark:border-slate-800 rounded-xl text-[12px] group hover:border-emerald-500/30 transition-colors shadow-sm gap-4"
