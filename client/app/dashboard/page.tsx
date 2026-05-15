@@ -18,7 +18,7 @@ import { exportCasesToCSV } from "../../lib/csvExport";
 import Footer from "@/components/Footer";
 import ThemeToggle from "@/components/ThemeToggle";
 import ToolModal from "@/components/ToolModal";
-import { Search, Activity, Skull, Save, Folder, Zap, Download, AlertTriangle, FileText, LayoutDashboard, Database } from "lucide-react";
+import { Search, Activity, Skull, Save, Folder, Zap, Download, AlertTriangle, FileText } from "lucide-react";
 
 interface CaseRecord {
   id: string;
@@ -173,7 +173,7 @@ export default function DashboardPage() {
     },
   ];
 
-  const handleToolClick = (tool: any) => {
+  const handleToolClick = (tool: { name: string; cat: string; icon: React.ReactNode; id: string; special?: boolean }) => {
     if (tool.special) {
       runAutomatedFlow();
     } else {

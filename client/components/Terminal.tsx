@@ -218,13 +218,13 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 export default function ForensicTerminal() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-  const isInitialized = useRef(false);
+  const isInitializedRef = useRef<boolean | null>(null);
 
-  if (!isInitialized.current && typeof window !== "undefined") {
-    isInitialized.current = true;
+  if (isInitializedRef.current == null) {
+    isInitializedRef.current = typeof window !== "undefined";
   }
 
-  if (!isInitialized.current) {
+  if (!isInitializedRef.current) {
     return <div className="h-64 mt-8 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />;
   }
 

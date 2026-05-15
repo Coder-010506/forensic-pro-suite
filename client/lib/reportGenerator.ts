@@ -74,7 +74,7 @@ export const generateForensicReport = (data: ForensicReportData) => {
   // Watermark
   const addWatermark = (pdf: jsPDF) => {
     pdf.saveGraphicsState();
-    pdf.setGState(new (pdf as any).GState({ opacity: 0.05 }));
+    pdf.setGState(new (pdf as unknown as Record<string, unknown>).GState({ opacity: 0.05 }) as jsPDF.GState);
     pdf.setFontSize(60);
     pdf.setTextColor(150);
     pdf.setFont('helvetica', 'bold');
@@ -111,7 +111,7 @@ export const generateForensicReport = (data: ForensicReportData) => {
   });
 
   // 2. Forensic Integrity Checklist
-  const finalY = (doc as any).lastAutoTable.finalY;
+  const finalY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   doc.setFontSize(12);
   doc.setTextColor(15, 23, 42);
   doc.text('Forensic Integrity Checklist', 15, finalY + 15);
@@ -134,7 +134,7 @@ export const generateForensicReport = (data: ForensicReportData) => {
   });
 
   // 3. Investigator Timeline & Notes
-  const checklistY = (doc as any).lastAutoTable.finalY;
+  const checklistY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   doc.setFontSize(12);
   doc.setTextColor(15, 23, 42);
   doc.text('Investigation Timeline & Notes', 15, checklistY + 15);
@@ -155,14 +155,13 @@ export const generateForensicReport = (data: ForensicReportData) => {
   });
 
   // 4. Data Visualization (Simplified Chart)
-  const timelineY = (doc as any).lastAutoTable.finalY;
+  const timelineY = (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable.finalY;
   doc.setFontSize(12);
   doc.setTextColor(15, 23, 42);
   doc.text('Forensic Volume Snapshot', 15, timelineY + 15);
 
   const chartX = 15;
   const chartY = timelineY + 25;
-  const chartWidth = 100;
   const chartHeight = 30;
 
   // Draw simple bar chart
@@ -198,7 +197,7 @@ export const generateForensicReport = (data: ForensicReportData) => {
   }
 
   // Footer for the only/last page
-  const totalPages = (doc as any).internal.getNumberOfPages();
+  const totalPages = (doc as unknown as { internal: { getNumberOfPages: () => number } }).internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     addFooter(doc, i, totalPages);
