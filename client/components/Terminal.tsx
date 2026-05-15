@@ -9,11 +9,18 @@ import { useTheme } from "next-themes";
 function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const termInstance = useRef<Terminal | null>(null);
+  const commandHistory = useRef<string[]>([]);
+  const historyIndex = useRef(-1);
 
   const handleCommand = (cmd: string, term: Terminal) => {
-    const command = cmd.trim().toLowerCase();
+    const command = cmd.trim();
+    if (command) {
+      commandHistory.current.push(command);
+      historyIndex.current = commandHistory.current.length;
+    }
+    const commandLower = command.toLowerCase();
 
-    switch (command) {
+    switch (commandLower) {
       case "help":
         term.writeln(
           "Commands: autopsy, wireshark --cli, fls <image>, mactime, vol.py --info, hash <file>, clear"
@@ -143,6 +150,24 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         handleCommand(currentLine, term);
         currentLine = "";
         term.write("$ ");
+      } else if (domEvent.keyCode === 38) { // Up arrow
+        if (historyIndex.current > 0) {
+          historyIndex.current--;
+          const prevCommand = commandHistory.current[historyIndex.current];
+          term.write("\r\x1b[K$ " + prevCommand);
+          currentLine = prevCommand;
+        }
+      } else if (domEvent.keyCode === 40) { // Down arrow
+        if (historyIndex.current < commandHistory.current.length - 1) {
+          historyIndex.current++;
+          const nextCommand = commandHistory.current[historyIndex.current];
+          term.write("\r\x1b[K$ " + nextCommand);
+          currentLine = nextCommand;
+        } else {
+          historyIndex.current = commandHistory.current.length;
+          term.write("\r\x1b[K$ ");
+          currentLine = "";
+        }
       } else if (domEvent.keyCode === 8) { // Backspace
         if (currentLine.length > 0) {
           currentLine = currentLine.slice(0, -1);
