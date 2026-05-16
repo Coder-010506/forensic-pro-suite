@@ -10,6 +10,10 @@ from security import (
 )
 import os
 import time
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
@@ -23,17 +27,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Forensic evidence file types — executables and scripts are explicitly excluded
 ALLOWED_EXTENSIONS = {
-    ".dd", ".img", ".e01", ".ex01", ".l01", ".s01",  # disk images
-    ".pcap", ".pcapng",                                # network captures
-    ".pdf", ".docx", ".xlsx", ".txt", ".csv", ".log", # documents / logs
-    ".jpg", ".jpeg", ".png", ".bmp", ".tiff",         # images
-    ".zip", ".tar", ".gz",                             # archives
+    ".dd", ".img", ".e01", ".ex01", ".l01", ".s01",
+    ".pcap", ".pcapng",
+    ".pdf", ".docx", ".xlsx", ".txt", ".csv", ".log",
+    ".jpg", ".jpeg", ".png", ".bmp", ".tiff",
+    ".zip", ".tar", ".gz",
 }
 
+MAX_FILE_SIZE = 500 * 1024 * 1024
 
-MAX_FILE_SIZE = 500 * 1024 * 1024  # 500 MB
 
 @app.get("/api/stats")
 async def get_case_stats():
@@ -62,7 +65,9 @@ async def get_case_stats():
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Stats endpoint error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error while fetching stats.")
+
 
 @app.post("/api/analyze")
 async def run_forensic_pipeline(request: Request, file: UploadFile = File(...)):
@@ -110,7 +115,15 @@ async def run_forensic_pipeline(request: Request, file: UploadFile = File(...)):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Forensic pipeline error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error during forensic analysis.")
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except OSError as e:
+                logger.warning(f"Failed to cleanup temp file {tmp_path}: {str(e)}")
+
 
 if __name__ == "__main__":
     import uvicorn
