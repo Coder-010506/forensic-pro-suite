@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
@@ -101,7 +101,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
     let initTimeout: NodeJS.Timeout;
     const checkInterval = setInterval(() => {
-      if (terminalRef.current && terminalRef.current.offsetWidth > 0 && !initialized.current === false) {
+      if (terminalRef.current && terminalRef.current.offsetWidth > 0 && initialized.current === false) {
         clearInterval(checkInterval);
         
         try {
@@ -115,10 +115,12 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
                 termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
                 termInstance.current.writeln('Type "help" to see available forensic commands.');
                 termInstance.current.write("\r\n$ ");
-              } catch (e) {}
+              } catch {
+                // Ignore fit errors
+              }
             }
           }, 100);
-        } catch (e) {
+        } catch {
           // Fallback if open fails
         }
       }
@@ -128,7 +130,9 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       if (!termInstance.current || !terminalRef.current || !terminalRef.current.offsetParent) return;
       try {
         fitAddon.fit();
-      } catch (e) {}
+        } catch {
+          // Ignore dispose errors
+        }
     });
     resizeObserver.observe(terminalRef.current);
 
@@ -167,10 +171,12 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       if (toDispose) {
         try {
           toDispose.dispose();
-        } catch (e) {}
+        } catch {
+          // Ignore dispose errors
+        }
       }
     };
-  }, []);
+  }, [isDark]);
 
   useEffect(() => {
     if (termInstance.current) {
@@ -210,13 +216,13 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 }
 
 export default function ForensicTerminal() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!mounted) {
     return <div className="h-64 mt-8 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />;
