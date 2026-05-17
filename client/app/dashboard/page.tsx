@@ -545,7 +545,7 @@ export default function DashboardPage() {
                     animate={{ opacity: 1 }}
                     className="text-center py-8 text-slate-500 text-sm font-mono"
                   >
-                    No cases found matching "{searchQuery}"
+                    No cases found matching &quot;{searchQuery}&quot;
                   </motion.div>
                 )}
               </AnimatePresence>

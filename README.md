@@ -2,9 +2,9 @@
 
 A high-fidelity Digital Forensics Workstation enhanced for automated artifact extraction, geospatial threat triage, and redundant chain-of-custody documentation.
 
-| Resource           | Link                                                                                             |
-| ------------------ | ------------------------------------------------------------------------------------------------ |
-| **Live Workstation** | [https://forensic-pro-suite-new.vercel.app/](https://forensic-pro-suite-new.vercel.app/)       |
+| Resource             | Link                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------ |
+| **Live Workstation** | [https://forensic-pro-suite-new.vercel.app/](https://forensic-pro-suite-new.vercel.app/)         |
 
 ## Advanced Forensic Enhancements (The "Strong" Version)
 
