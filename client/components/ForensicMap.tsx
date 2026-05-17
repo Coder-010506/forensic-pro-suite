@@ -286,6 +286,12 @@ export default function ForensicMap() {
     () => [...visibleCities].sort((a, b) => b.crimeIndex - a.crimeIndex).slice(0, 25),
     [visibleCities]
   );
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const mapFill = isDark ? "#1e293b" : "#e2e8f0";
+  const mapStroke = isDark ? "#334155" : "#cbd5e1";
+  const mapHover = isDark ? "#334155" : "#cbd5e1";
+  const labelFill = isDark ? "#94a3b8" : "#64748b";
 
   return (
     <div className="space-y-4">
@@ -348,6 +354,40 @@ export default function ForensicMap() {
                     fillOpacity: 0.9,
                     weight: 1,
                   }}
+      <div className="w-full rounded-xl overflow-hidden bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-inner">
+        <ComposableMap
+          projection="geoMercator"
+          style={{ width: '100%', height: '320px' }}
+          projectionConfig={{ scale: 120 }}
+        >
+          <ZoomableGroup>
+            <Geographies geography={GEO_URL}>
+              {({ geographies }) =>
+                geographies.map((geo) => (
+                  <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill={mapFill}
+                    stroke={mapStroke}
+                    strokeWidth={0.5}
+                    style={{ 
+                      default: { outline: 'none' }, 
+                      hover: { outline: 'none', fill: mapHover }, 
+                      pressed: { outline: 'none' } 
+                    }}
+                  />
+                ))
+              }
+            </Geographies>
+
+            {THREAT_ACTORS.map((actor) => (
+              <Marker key={actor.name} coordinates={actor.coordinates}>
+                <circle r={5} fill={severityColor[actor.severity]} opacity={0.9} />
+                <circle r={9} fill={severityColor[actor.severity]} opacity={0.2} />
+                <text
+                  textAnchor="middle"
+                  y={-12}
+                  style={{ fontFamily: 'monospace', fontSize: '8px', fill: labelFill }}
                 >
                     <Popup>
                       <div className="text-xs">
