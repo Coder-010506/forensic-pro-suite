@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
@@ -9,18 +9,11 @@ import { useTheme } from "next-themes";
 function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
   const terminalRef = useRef<HTMLDivElement>(null);
   const termInstance = useRef<Terminal | null>(null);
-  const commandHistory = useRef<string[]>([]);
-  const historyIndex = useRef(-1);
 
   const handleCommand = (cmd: string, term: Terminal) => {
-    const command = cmd.trim();
-    if (command) {
-      commandHistory.current.push(command);
-      historyIndex.current = commandHistory.current.length;
-    }
-    const commandLower = command.toLowerCase();
+    const command = cmd.trim().toLowerCase();
 
-    switch (commandLower) {
+    switch (command) {
       case "help":
         term.writeln(
           "Commands: autopsy, wireshark --cli, fls <image>, mactime, vol.py --info, hash <file>, clear"
@@ -72,6 +65,15 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         term.clear();
         break;
 
+      case "hash":
+      case "hash <file>":
+        term.writeln("[*] Computing forensic hashes for evidence file...");
+        term.writeln("[+] SHA-256: a81f3c72b9e4d6f1c0a5827e3d49b610f7e2c8a5d3b94f16e0c7d2a8b5e3f194");
+        term.writeln("[+] MD5:     7f8a3b2c1d0e9f4a5b6c7d8e9f0a1b2c");
+        term.writeln("[+] SHA-1:   3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d");
+        term.writeln("[+] Integrity: VERIFIED - No tampering detected.");
+        break;
+
       case "":
         break;
 
@@ -108,7 +110,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
     let initTimeout: NodeJS.Timeout;
     const checkInterval = setInterval(() => {
-      if (terminalRef.current && terminalRef.current.offsetWidth > 0 && !initialized.current === false) {
+      if (terminalRef.current && terminalRef.current.offsetWidth > 0 && initialized.current === false) {
         clearInterval(checkInterval);
         
         try {
@@ -122,10 +124,12 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
                 termInstance.current.writeln("\x1b[1;32m--- FORENSIC_PRO_TERMINAL v1.0.4 ---\x1b[0m");
                 termInstance.current.writeln('Type "help" to see available forensic commands.');
                 termInstance.current.write("\r\n$ ");
-              } catch (e) {}
+              } catch {
+                // Ignore fit errors
+              }
             }
           }, 100);
-        } catch (e) {
+        } catch {
           // Fallback if open fails
         }
       }
@@ -135,7 +139,9 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       if (!termInstance.current || !terminalRef.current || !terminalRef.current.offsetParent) return;
       try {
         fitAddon.fit();
-      } catch (e) {}
+        } catch {
+          // Ignore dispose errors
+        }
     });
     resizeObserver.observe(terminalRef.current);
 
@@ -150,24 +156,6 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
         handleCommand(currentLine, term);
         currentLine = "";
         term.write("$ ");
-      } else if (domEvent.keyCode === 38) { // Up arrow
-        if (historyIndex.current > 0) {
-          historyIndex.current--;
-          const prevCommand = commandHistory.current[historyIndex.current];
-          term.write("\r\x1b[K$ " + prevCommand);
-          currentLine = prevCommand;
-        }
-      } else if (domEvent.keyCode === 40) { // Down arrow
-        if (historyIndex.current < commandHistory.current.length - 1) {
-          historyIndex.current++;
-          const nextCommand = commandHistory.current[historyIndex.current];
-          term.write("\r\x1b[K$ " + nextCommand);
-          currentLine = nextCommand;
-        } else {
-          historyIndex.current = commandHistory.current.length;
-          term.write("\r\x1b[K$ ");
-          currentLine = "";
-        }
       } else if (domEvent.keyCode === 8) { // Backspace
         if (currentLine.length > 0) {
           currentLine = currentLine.slice(0, -1);
@@ -192,10 +180,12 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
       if (toDispose) {
         try {
           toDispose.dispose();
-        } catch (e) {}
+        } catch {
+          // Ignore dispose errors
+        }
       }
     };
-  }, []);
+  }, [isDark]);
 
   useEffect(() => {
     if (termInstance.current) {
@@ -210,7 +200,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
   return (
     <div 
-      className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm cursor-text"
+      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm cursor-text"
       onClick={() => {
         if (termInstance.current) {
           termInstance.current.focus();
@@ -228,20 +218,20 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
       <div 
         ref={terminalRef} 
-        className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f172a]" : "bg-white"}`} 
+        className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-slate-950" : "bg-white"}`} 
       />
     </div>
   );
 }
 
 export default function ForensicTerminal() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   if (!mounted) {
     return <div className="h-64 mt-8 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />;

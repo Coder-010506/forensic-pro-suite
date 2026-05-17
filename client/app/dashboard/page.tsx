@@ -22,6 +22,7 @@ import { Search, Activity, Skull, Save, Folder, Zap, Download, AlertTriangle, Fi
 import Link from "next/link";
 import LoadingSkeleton from "@/components/LoadingSkeleton";
 import { Search, Activity, Skull, Save, Folder, Zap, Download, AlertTriangle, FileText, LayoutDashboard, Database } from "lucide-react";
+import { Search, Activity, Skull, Save, Folder, Zap, Download, AlertTriangle, FileText } from "lucide-react";
 
 interface CaseRecord {
   id: string;
@@ -242,6 +243,7 @@ export default function DashboardPage() {
       window.location.href = tool.link;
     } else if (tool.special && tool.id === "tool-automated-flow") {
   const handleToolClick = (tool: any) => {
+  const handleToolClick = (tool: { name: string; cat: string; icon: React.ReactNode; id: string; special?: boolean; tasks?: string[] }) => {
     if (tool.special) {
       runAutomatedFlow();
     } else {
@@ -262,7 +264,6 @@ export default function DashboardPage() {
         setFetchError(null);
         setCaseHistory(data as CaseRecord[]);
       }
-      setIsLoading(false);
     };
     fetchHistory();
   }, [analysisResult]);
@@ -319,6 +320,16 @@ export default function DashboardPage() {
 
   const chartData = buildChartData(caseHistory.length > 0 ? caseHistory : demoCaseRecords);
 
+  const allCases = caseHistory.length > 0 ? caseHistory : demoCaseRecords;
+  const filteredCases = searchQuery
+    ? allCases.filter(
+        (item) =>
+          item.filename.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.case_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.status.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allCases;
+
   const stats = {
   total: caseHistory.length,
   pending: caseHistory.filter((c) => c.status?.toLowerCase() === "pending").length,
@@ -327,11 +338,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <>
-      {isLoading ? (
-        <LoadingSkeleton />
-      ) : (
-    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-6 font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 p-4 sm:p-6 lg:p-6 font-sans transition-colors duration-300">
       <header className="flex flex-col md:flex-row justify-between items-center md:items-start mb-10 border-b border-slate-200 dark:border-slate-800 pb-8 gap-8 text-center md:text-left">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -348,7 +355,7 @@ export default function DashboardPage() {
 
         <div className="flex flex-wrap justify-center items-center gap-4">
           <ThemeToggle />
-          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 md:p-3 rounded-xl text-center min-w-[80px]">
+          <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2 md:p-3 rounded-xl text-center min-w-20">
             <p className="text-[8px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-widest mb-1">Archive</p>
             <p className="text-lg md:text-xl font-mono text-emerald-600 dark:text-emerald-400">{caseHistory.length}</p>
           </div>
@@ -358,7 +365,7 @@ export default function DashboardPage() {
               {session?.user?.name?.[0] || "A"}
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-[10px] font-bold text-slate-300 truncate max-w-[80px] sm:max-w-[120px]">
+              <span className="text-[10px] font-bold text-slate-300 truncate max-w-20 sm:max-w-30">
                 {session?.user?.email}
               </span>
               <button
@@ -379,7 +386,7 @@ export default function DashboardPage() {
       <motion.section
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+        className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8"
       >
         {[
           { label: "Total Cases", value: stats.total, color: "text-emerald-400", border: "border-emerald-500/20" },
@@ -387,7 +394,7 @@ export default function DashboardPage() {
           { label: "Verified", value: stats.verified, color: "text-blue-400", border: "border-blue-500/20" },
           { label: "Reports Generated", value: stats.reportsGenerated, color: "text-purple-400", border: "border-purple-500/20" },
         ].map((stat) => (
-          <div key={stat.label} className={`bg-slate-50 dark:bg-slate-900 border ${stat.border} rounded-xl p-4 text-center shadow-sm`}>
+          <div key={stat.label} className={`bg-slate-50 dark:bg-slate-900 border ${stat.border} rounded-xl p-3 sm:p-4 text-center shadow-sm`}>
             <p className="text-[10px] uppercase text-slate-400 dark:text-slate-500 font-bold tracking-widest mb-2">{stat.label}</p>
             <p className={`text-3xl font-mono font-bold ${stat.color}`}>{stat.value}</p>
           </div>
@@ -395,7 +402,7 @@ export default function DashboardPage() {
       </motion.section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-6 sm:space-y-8">
           <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {forensicTools.map((tool, index) => (
               <motion.div
@@ -405,7 +412,7 @@ export default function DashboardPage() {
                 transition={{ delay: index * 0.05 }}
                 id={tool.id}
                 onClick={() => handleToolClick(tool)}
-                className={`bg-slate-50 dark:bg-slate-900 border ${tool.special ? "border-emerald-500/50" : "border-slate-200 dark:border-slate-800"} p-4 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all relative overflow-hidden group min-h-[120px] shadow-sm`}
+                className={`bg-slate-50 dark:bg-slate-900 border ${tool.special ? "border-emerald-500/50" : "border-slate-200 dark:border-slate-800"} p-4 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-all relative overflow-hidden group min-h-30 shadow-sm`}
               >
                 {tool.special && isAnalyzing && (
                   <motion.div
@@ -463,7 +470,7 @@ export default function DashboardPage() {
           {/* Database Records */}
           <motion.section className="bg-slate-50/50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
             <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <h2 className="text-xs font-bold text-slate-400 dark:text-slate-400 font-mono uppercase tracking-widest">
                   Database Records
                 </h2>
@@ -473,7 +480,27 @@ export default function DashboardPage() {
                   </p>
                 )}
               </div>
-              <button
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+                <div className="relative w-full sm:w-56">
+                  <input
+                    type="text"
+                    placeholder="Search cases..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg pl-3 pr-8 py-1.5 text-[11px] font-mono text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500/50 transition-all"
+                    aria-label="Search case records"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                      aria-label="Clear search"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <button
                 onClick={handleExportCSV}
                 disabled={exportButtonDisabled}
                 className={`rounded-full border px-4 py-2 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center gap-2 transition-all duration-200 ${
@@ -482,9 +509,10 @@ export default function DashboardPage() {
                     : "border-emerald-500/30 bg-slate-100/90 dark:bg-slate-900/90 text-emerald-600 dark:text-emerald-300 shadow-sm shadow-emerald-500/10 hover:border-emerald-400 hover:bg-emerald-500/15 hover:text-emerald-500 dark:hover:text-emerald-100 active:scale-[0.98]"
                 }`}
               >
-                <Download className="w-3.5 h-3.5" />
-                <span>{csvButtonLabel}</span>
-              </button>
+                  <Download className="w-3.5 h-3.5" />
+                  <span>{csvButtonLabel}</span>
+                </button>
+              </div>
             </div>
 
             <AnimatePresence>
@@ -533,7 +561,7 @@ export default function DashboardPage() {
               </p>
             )}
 
-            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-100 overflow-y-auto pr-2">
               <AnimatePresence>
                 {(filteredCases.length > 0 ? filteredCases : searchQuery ? [] : allCases).map((item) => (
                   <div key={item.id}>
@@ -548,7 +576,7 @@ export default function DashboardPage() {
                     <div className="flex flex-col gap-1 w-full sm:w-auto">
                       <div className="flex items-center gap-3">
                         <span className="text-emerald-500 opacity-50 font-mono text-[10px]">ID_{item.case_id?.slice(0, 5)}</span>
-                        <span className="font-mono text-slate-900 dark:text-slate-100 truncate max-w-[150px] sm:max-w-[200px]">{item.filename}</span>
+                        <span className="font-mono text-slate-900 dark:text-slate-100 truncate max-w-37.5 sm:max-w-50">{item.filename}</span>
                       </div>
                       <span className="text-slate-500 font-mono text-[9px] block sm:hidden">
                         {item.hash_value.slice(0, 24)}...
@@ -621,12 +649,21 @@ export default function DashboardPage() {
                     )}
                   </div>
                 ))}
+                {searchQuery && filteredCases.length === 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center py-8 text-slate-500 text-sm font-mono"
+                  >
+                    No cases found matching &quot;{searchQuery}&quot;
+                  </motion.div>
+                )}
               </AnimatePresence>
             </div>
           </motion.section>
         </div>
 
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-4 sm:space-y-6">
           <div id="forensic-terminal-container" className="sticky top-6 space-y-6">
             <ThreatIntelligenceFeed />
             <ForensicTerminal />
@@ -642,7 +679,5 @@ export default function DashboardPage() {
         onClose={() => setSelectedTool(null)} 
       />
     </div>
-      )}
-    </>
   );
 }
