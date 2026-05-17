@@ -74,7 +74,7 @@ export const generateForensicReport = (data: ForensicReportData) => {
   // Watermark
   const addWatermark = (pdf: jsPDF) => {
     pdf.saveGraphicsState();
-    pdf.setGState(new (pdf as unknown as Record<string, unknown>).GState({ opacity: 0.05 }) as import('jspdf').GState);
+    pdf.setGState(new (pdf as unknown as { GState: new (opts: { opacity: number }) => unknown }).GState({ opacity: 0.05 }) as import('jspdf').GState);
     pdf.setFontSize(60);
     pdf.setTextColor(150);
     pdf.setFont('helvetica', 'bold');

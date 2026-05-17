@@ -200,7 +200,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
   return (
     <div 
-      className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm cursor-text"
+      className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mt-8 shadow-sm cursor-text"
       onClick={() => {
         if (termInstance.current) {
           termInstance.current.focus();
@@ -218,7 +218,7 @@ function ForensicTerminalContent({ isDark }: { isDark: boolean }) {
 
       <div 
         ref={terminalRef} 
-        className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-[#0f172a]" : "bg-white"}`} 
+        className={`h-64 rounded-lg overflow-hidden transition-colors duration-300 ${isDark ? "bg-slate-950" : "bg-white"}`} 
       />
     </div>
   );
