@@ -4,6 +4,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+<<<<<<< HEAD
 import {
   Eye,
   EyeOff,
@@ -12,6 +13,10 @@ import {
   Terminal,
   AlertCircle,
 } from "lucide-react";
+=======
+import { Eye, EyeOff, Lock, User, Terminal, AlertCircle } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
+>>>>>>> 72972e1b7974a24ddc195645366d4698e962be24
 
 function validateEmail(email: string): boolean {
   const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -87,6 +92,9 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center p-4 transition-colors duration-300">
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
